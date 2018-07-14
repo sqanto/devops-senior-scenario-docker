@@ -10,15 +10,15 @@ services:
     labels:
       - "traefik.enable=false"
     ports:
-      - "8080:8080"
+#      - "8080:8080"  # Enable if you want see Admin Panel of traefik_frontend
       - "80:80"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
   phpfrontend:
     image: richarvey/nginx-php-fpm
-    ports:
-      - "8084:80"
+#    ports:
+#      - "8084:80" # Enable if you want see direct phpfrontend
     labels:
       - "traefik.backend=fe"
       - "traefik.frontend.rule=Host:fe.localhost"
@@ -35,8 +35,8 @@ services:
   traefik_backend:
     image: traefik
     command: -c /dev/null --api --docker --docker.domain=php-backend --logLevel=DEBUG
-    ports:
-      - "8081:8080"
+#    ports:
+#      - "8081:8080" # Enable if you want see Admin Panel of traefik_backend
     labels:
       - "traefik.enable=false"
     networks:
@@ -52,8 +52,8 @@ services:
 
   phpbackend:
     image: richarvey/nginx-php-fpm
-    ports:
-      - "8085:80"
+#    ports:
+#      - "8085:80" # Enable if you want see direct phpbackend
     labels:
       - "traefik.backend=be"
       - "traefik.frontend.rule=Host:php-backend"
@@ -91,10 +91,13 @@ networks:
     driver: overlay
     external: true
   frontend:
+    driver: overlay
     external: false
   backend:
+    driver: overlay
     external: false
   db:
+    driver: overlay
     external: false
 
 
