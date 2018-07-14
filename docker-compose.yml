@@ -1,0 +1,100 @@
+version: "3"
+services:
+
+  traefik_frontend:
+    image: traefik
+    command: -c /dev/null --api --docker --docker.domain=fe.localhost --logLevel=DEBUG
+    networks:
+      - proxy
+      - frontend
+    labels:
+      - "traefik.enable=false"
+    ports:
+      - "8080:8080"
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  phpfrontend:
+    image: richarvey/nginx-php-fpm
+    ports:
+      - "8084:80"
+    labels:
+      - "traefik.backend=fe"
+      - "traefik.frontend.rule=Host:fe.localhost"
+      - "traefik.docker.network=test_frontend"
+      - "traefik.port=80"
+    networks:
+      - frontend
+      - backend
+    volumes:
+      - $PWD/application/frontend/:/var/www/html/
+    deploy:
+      replicas: 2
+
+  traefik_backend:
+    image: traefik
+    command: -c /dev/null --api --docker --docker.domain=php-backend --logLevel=DEBUG
+    ports:
+      - "8081:8080"
+    labels:
+      - "traefik.enable=false"
+    networks:
+      frontend:
+        aliases:
+          - php-backend
+      backend:
+#        aliases:
+#          - php-backend
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+
+  phpbackend:
+    image: richarvey/nginx-php-fpm
+    ports:
+      - "8085:80"
+    labels:
+      - "traefik.backend=be"
+      - "traefik.frontend.rule=Host:php-backend"
+      - "traefik.port=80"
+      - "traefik.docker.network=test_backend"
+    networks:
+      - backend
+      - db
+    volumes:
+      - $PWD/application/backend/:/var/www/html/
+    deploy:
+      replicas: 2
+
+  db:
+    image: mysql:5.7
+    hostname: backend-db
+    labels:
+      - "traefik.enable=false"
+    volumes:
+      - $PWD/db/data/:/var/lib/mysql
+    restart: always
+    networks:
+      db:
+        aliases:
+         - db
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: backend
+      MYSQL_USER: backend
+      MYSQL_PASSWORD: backend
+
+
+networks:
+  proxy:
+    driver: overlay
+    external: true
+  frontend:
+    external: false
+  backend:
+    external: false
+  db:
+    external: false
+
+

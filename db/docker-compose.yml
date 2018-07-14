@@ -1,0 +1,28 @@
+version: "3"
+services:
+  db:
+    image: mysql:5.7
+    hostname: backend-db
+#    volumes:
+#      - db_data:/var/lib/mysql
+    restart: always
+#    ports:
+#      - 3306:3306
+    networks:
+      - internaldb
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: backend
+      MYSQL_USER: backend
+      MYSQL_PASSWORD: backend
+
+
+
+networks:
+  proxy:
+    driver: overlay
+    external: true
+  internaldb:
+    external: false
+
+

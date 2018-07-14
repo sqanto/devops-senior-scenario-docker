@@ -1,0 +1,22 @@
+version: "3"
+services:
+
+  frontend:
+    image: richarvey/nginx-php-fpm
+    hostname: frontend
+    networks:
+      - internaldb
+      - proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./:/var/www/html/
+
+networks:
+  proxy:
+    driver: overlay
+    external: true
+  internaldb:
+    external: false
+
+
