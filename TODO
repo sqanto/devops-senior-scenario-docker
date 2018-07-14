@@ -1,0 +1,39 @@
+* Setup docker swarm script
+* cleanup 
+* update docker-compose in  application folder
+* make frontend application better its now messy
+
+
+
+
+
+## Bonus points
+
+
+
+* Provide a way to show container metrics
+
+Status: in progress
+
+* Have separate networks with least required access 
+
+Status: Done Frontend , Backend and DB have on Networks without expost Ports 
+
+* Tests are provided
+
+Status: What this mean  ? what kind of tests ? 
+
+## Outstanding bonus points
+
+
+* Include auto-discovery and service registration
+ Status: Also done with the labels if nessecarry  i  can create a consul Service 
+
+
+Time Tracking 
+
+* Research 1 H
+* Setup simple Frontend - Backend Application with php  1 H 
+* Setup docker-compose 2 H 
+
+5 H

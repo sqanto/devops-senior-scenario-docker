@@ -1,0 +1,5 @@
+Run "docker swarm init" for create the swarm manager 
+Start compose : "docker stack deploy -c docker-compose.yml --with-registry-auth test"
+
+
+
