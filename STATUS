@@ -34,7 +34,7 @@ Status: Done  http
 
 * Provide a way to show container metrics
 
-Status: in progress
+Status: Done  Prometheus grafana cadvisor and caddy
 
 * Have separate networks with least required access 
 
