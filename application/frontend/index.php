@@ -64,3 +64,41 @@
 ?>
 <p><span style="text-decoration: underline; color: #ff0000;"><strong>-----------------------------------------------</strong></span><span style="color: #0000ff;"><br /></span></p>
 
+
+
+
+<h1>Example for brocken Connection Wrong DB Credentials</h1>
+
+<p><br />If the Connection is not working</p>
+<p>&nbsp;</p>
+<p>If the Connection is not working because of  Wrong DB Credentials in</p>
+
+<blockquote><span style="color: #0000ff;">&lt;?php<br />$servername = "db";<br />$database = "backend";<br />$username = "backend";<br />$password = "backendddd";</span><span style="color: #0000ff;">// Create connection<br />$conn = new mysqli($servername, $username, $password);<br />// Check connection<br />if ($conn-&gt;connect_error) {<br /> die("Connection failed: " . $conn-&gt;connect_error);<br />}<br /> echo "Connected successfully";<br />?&gt;</span></blockquote>
+
+
+<p>Result is:</p>
+
+
+
+
+<p><span style="text-decoration: underline; color: #ff0000;"><strong>-----------------------------------------------</strong></span><span style="color: #0000ff;"><br /></span></$
+<?php
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, "http://php-backend/backend2.php");
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    if(curl_exec($ch) === FALSE) {
+         echo "Error: " . curl_error($ch);
+    } else {
+         echo curl_exec($ch);
+    }
+
+    curl_close($ch);
+
+?>
+<p><span style="text-decoration: underline; color: #ff0000;"><strong>-----------------------------------------------</strong></span><span style="color: #0000ff;"><br /></span></$
+
+
+
