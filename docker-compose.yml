@@ -1,4 +1,5 @@
 version: "3"
+
 services:
 
   traefik_frontend:
@@ -84,6 +85,107 @@ services:
       MYSQL_DATABASE: backend
       MYSQL_USER: backend
       MYSQL_PASSWORD: backend
+
+  prometheus:
+    image: stefanprodan/swarmprom-prometheus:v2.2.0-rc.0
+    networks:
+      - frontend
+      - backend
+      - db
+    command:
+      - '--config.file=/etc/prometheus/prometheus1.yml'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention=24h'
+    volumes:
+      - $PWD/prometheus/data/:/prometheus
+      - $PWD/prometheus/conf/prometheus.yml:/etc/prometheus/prometheus1.yml
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+
+  cadvisor:
+    image: google/cadvisor
+    networks:
+      - db
+      - frontend
+      - backend
+    command: -logtostderr -docker_only
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /:/rootfs:ro
+      - /var/run:/var/run
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    deploy:
+      mode: global
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+
+  caddy:
+    image: stefanprodan/caddy
+    ports:
+      - "3000:3000"
+      - "9090:9090"
+      - "9093:9093"
+      - "9094:9094"
+    networks:
+      - frontend
+      - backend
+      - db
+    environment:
+      - ADMIN_USER=admin
+      - ADMIN_PASSWORD=justasuperpass
+    volumes:
+      - $PWD/caddy/Caddyfile:/etc/caddy/Caddyfile
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 5s
+      timeout: 1s
+      retries: 5
+
+
+  grafana:
+    image: stefanprodan/swarmprom-grafana:5.0.1
+    networks:
+      - frontend
+      - backend
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=hardwsecurepass
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - $PWD/grafana/data:/var/lib/grafana
+#      - /data/docker/swarmprom/grafana/dashboard:/etc/grafana/dashboards/
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
 
 
 networks:
